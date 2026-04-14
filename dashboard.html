@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><title>Mi Galería Monolítica</title></head>
+<body>
+    <h1>Bienvenido, {{ current_user.username }}</h1>
+    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+
+    <hr>
+    <h3>Subir nueva imagen</h3>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Subir</button>
+    </form>
+
+    <hr>
+    <h3>Mis Imágenes</h3>
+    <div style="display: flex; gap: 10px;">
+        {% for img in images %}
+            <div>
+                <img src="{{ url_for('static', filename='uploads/' + img.filename) }}" width="200">
+                <p>{{ img.filename }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
