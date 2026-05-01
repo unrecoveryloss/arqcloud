@@ -17,15 +17,16 @@ S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
 S3_REGION = "us-east-1"
 s3 = boto3.client('s3', region_name=S3_REGION)
 
-
-
 # --- CONFIGURACIÓN DE BASE DE DATOS (SQLite) ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-# Asegúrate de que apunte a la carpeta 'instance' donde ya verificaste que está el archivo
+# Forzamos la ruta a la carpeta 'instance' con ruta absoluta
 db_path = os.path.join(basedir, 'instance', 'proyecto.db')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# --- INICIALIZACIÓN DE SQLALCHEMY (Debe ir antes de los Modelos) ---
+db = SQLAlchemy(app)
 
 # --- CONFIGURACIÓN DE MAILTRAP ---
 app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
@@ -100,7 +101,7 @@ def register():
         msg = Message('Confirma tu cuenta', sender=app.config['MAIL_USERNAME'], recipients=[email])
         msg.body = f'Haz clic aquí para verificar tu cuenta: {link}'
         mail.send(msg)
-        flash("Registro exitoso. Revisa tu Inbox en Mailtrap para verificar tu cuenta.")
+        flash("Registro exitoso. Revisa tu Inbox en Mailtrap.")
     except Exception as e:
         flash("Usuario creado pero hubo un problema enviando el correo.")
         print(f"Error mail: {e}")
@@ -117,7 +118,7 @@ def confirm_email(token):
     user = User.query.filter_by(email=email).first_or_404()
     user.is_verified = True
     db.session.commit()
-    flash("¡Cuenta verificada! Ahora puedes iniciar sesión y subir imágenes.")
+    flash("¡Cuenta verificada! Ahora puedes iniciar sesión.")
     return redirect(url_for('login_page'))
 
 @app.route('/dashboard')
@@ -142,7 +143,6 @@ def upload():
 
     user = User.query.get(session['user_id'])
     
-    # Verificación de seguridad antes de procesar el archivo
     if not user.is_verified:
         flash("¡Error! Debes confirmar tu correo antes de subir archivos.")
         return redirect(url_for('dashboard'))
@@ -166,7 +166,6 @@ def logout():
     session.clear()
     return redirect(url_for('login_page'))
 
-# --- INICIO DE LA APP ---
 if __name__ == '__main__':
     with app.app_context():
         db.create_all() 
