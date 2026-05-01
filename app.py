@@ -19,13 +19,12 @@ s3 = boto3.client('s3', region_name=S3_REGION)
 
 # --- CONFIGURACIÓN DE BASE DE DATOS (SQLite) ---
 basedir = os.path.abspath(os.path.dirname(__file__))
-# Forzamos la ruta a la carpeta 'instance' con ruta absoluta
-db_path = os.path.join(basedir, 'instance', 'proyecto.db')
+db_path = os.path.join(basedir, 'proyecto.db') # Quitamos 'instance'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{db_path}'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# --- INICIALIZACIÓN DE SQLALCHEMY (Debe ir antes de los Modelos) ---
+# --- INICIALIZACIÓN ---
 db = SQLAlchemy(app)
 
 # --- CONFIGURACIÓN DE MAILTRAP ---
