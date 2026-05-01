@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-<head><title>Mi Galería Monolítica</title></head>
+
+<head>
+    <title>Mi Galería Monolítica</title>
+</head>
+
 <body>
     <h1>Bienvenido, {{ current_user.username }}</h1>
     <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
@@ -14,13 +18,15 @@
 
     <hr>
     <h3>Mis Imágenes</h3>
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         {% for img in images %}
-            <div>
-                <img src="{{ url_for('static', filename='uploads/' + img.filename) }}" width="200">
-                <p>{{ img.filename }}</p>
-            </div>
+        <div>
+            <!-- Concatenamos la base_url de S3 con el nombre del archivo -->
+            <img src="{{ base_url }}{{ img.filename }}" width="200" style="border-radius: 8px;">
+            <p style="font-size: 12px;">{{ img.filename }}</p>
+        </div>
         {% endfor %}
     </div>
 </body>
+
 </html>

@@ -1,22 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Login - Mi App Monolítica</title>
 </head>
+
 <body>
     <h2>Iniciar Sesión</h2>
-    
+
     {# Bloque para mostrar errores de login (flash messages) #}
     {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <p style="color: red;">{{ message }}</p>
-        {% endfor %}
-      {% endif %}
+    {% if messages %}
+    {% for message in messages %}
+    <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 
-    <form method="POST">
+    <form action="/login" method="POST">
         <div>
             <label>Usuario:</label><br>
             <input type="text" name="username" required>
@@ -31,4 +33,5 @@
     </form>
     <p>¿No tienes cuenta? <a href="{{ url_for('registro') }}">Regístrate aquí</a></p>
 </body>
+
 </html>
