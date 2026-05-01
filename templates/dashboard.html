@@ -3,30 +3,83 @@
 
 <head>
     <title>Mi Galería Monolítica</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .carousel-item img {
+            height: 400px;
+            object-fit: contain;
+            /* Para que la imagen no se deforme */
+            background-color: #f8f9fa;
+        }
+
+        .carousel {
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
 </head>
 
-<body>
-    <h1>Bienvenido, {{ username }}</h1>
-    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-
-    <hr>
-    <h3>Subir nueva imagen</h3>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Subir</button>
-    </form>
-
-    <hr>
-    <h3>Mis Imágenes</h3>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        {% for img in images %}
-        <div>
-            <!-- Concatenamos la base_url de S3 con el nombre del archivo -->
-            <img src="{{ base_url }}{{ img.filename }}" width="200" style="border-radius: 8px;">
-            <p style="font-size: 12px;">{{ img.filename }}</p>
-        </div>
-        {% endfor %}
+<body class="container py-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Bienvenido, {{ username }}</h1>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Cerrar Sesión</a>
     </div>
+
+    <hr>
+
+    <!-- Bloque de verificación (Cumpliendo requisito de autenticación) -->
+    {% if is_verified %}
+    <h3>Subir nueva imagen</h3>
+    <form action="/upload" method="post" enctype="multipart/form-data" class="mb-4">
+        <input type="file" name="file" class="form-control d-inline-block w-auto" required>
+        <button type="submit" class="btn btn-primary">Subir a S3</button>
+    </form>
+    {% else %}
+    <div class="alert alert-warning">
+        <strong>Atención:</strong> Debes verificar tu correo electrónico para poder subir imágenes.
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <h3>Mis Imágenes (Galería Dinámica)</h3>
+
+    {% if images %}
+    <!-- INICIO DEL CARRUSEL -->
+    <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for img in images %}
+            <div class="carousel-item {{ 'active' if loop.first }}">
+                <img src="{{ base_url }}{{ img.filename }}" class="d-block w-100" alt="Imagen de S3">
+                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded">
+                    <p class="mb-0">Subido el: {{ img.upload_date.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <small>Archivo: {{ img.filename }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Controles -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+    <!-- FIN DEL CARRUSEL -->
+    {% else %}
+    <p class="text-muted">Aún no has subido ninguna imagen.</p>
+    {% endif %}
+
+    <!-- Bootstrap JS (Obligatorio para que el carrusel se mueva) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
