@@ -17,14 +17,15 @@ S3_BUCKET = os.environ.get('S3_BUCKET_NAME')
 S3_REGION = "us-east-1"
 s3 = boto3.client('s3', region_name=S3_REGION)
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'proyecto.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+
 
 # --- CONFIGURACIÓN DE BASE DE DATOS (SQLite) ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///proyecto.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+# Asegúrate de que apunte a la carpeta 'instance' donde ya verificaste que está el archivo
+db_path = os.path.join(basedir, 'instance', 'proyecto.db')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 # --- CONFIGURACIÓN DE MAILTRAP ---
 app.config['MAIL_SERVER'] = 'sandbox.smtp.mailtrap.io'
