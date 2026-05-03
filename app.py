@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+import socket
 
 app = Flask(__name__)
 
@@ -159,6 +160,12 @@ def upload():
             flash(f"Error al subir a S3: {str(e)}")
             
     return redirect(url_for('dashboard'))
+
+@app.context_processor
+def inject_instance_info():
+    hostname = socket.gethostname()
+    ip_privada = socket.gethostbyname(hostname)
+    return dict(hostname=hostname, ip_privada=ip_privada)
 
 @app.route('/logout')
 def logout():
